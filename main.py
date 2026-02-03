@@ -1,34 +1,20 @@
 import streamlit as st
-import subprocess
-import sys
-
-# --- 1. CLOUD AUTO-FIX (FORCE INSTALL) ---
-# This forces the server to install missing tools immediately
-try:
-    import psycopg2
-    import xlsxwriter
-    import plotly
-except ImportError:
-    st.toast("⚙️ Installing Cloud Dependencies... Please wait.")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "psycopg2-binary", "XlsxWriter", "plotly"])
-# ----------------------------------------
-
 import auth
 import report_center
 import logistics_pro
 import branch_expenses
-import ho_expenses
+import ho_expenses  # <--- FINAL IMPORT
 
-# --- 2. GLOBAL CONFIG ---
+# --- 1. GLOBAL CONFIG ---
 st.set_page_config(page_title="DevXPS Logistics", layout="wide", page_icon="🚛")
 
-# --- 3. LOGIN CHECK ---
+# --- 2. LOGIN CHECK ---
 if not auth.check_login():
     st.title("🚛 DevXPS Logistics System")
     st.info("Please log in using the sidebar to access the system.")
     st.stop()
 
-# --- 4. LOGGED IN NAVIGATION ---
+# --- 3. LOGGED IN NAVIGATION ---
 user_role = st.session_state.user_role
 st.sidebar.divider()
 st.sidebar.write(f"👤 Logged in as: **{st.session_state.username.upper()}**")
@@ -52,7 +38,7 @@ elif user_role == "viewer":
 selected_app_name = st.sidebar.radio("Go to:", list(apps.keys()))
 selection = apps[selected_app_name]
 
-# --- 5. APP ROUTING ---
+# --- 4. APP ROUTING ---
 if selection == "report":
     report_center.app()
 
@@ -70,7 +56,7 @@ elif selection == "expense_b":
 
 elif selection == "expense_ho":
     try:
-        ho_expenses.app()
+        ho_expenses.app() # <--- RUNNING THE FINAL FILE
     except AttributeError:
         st.error("⚠️ Error: `ho_expenses.py` is missing the `app()` function.")
 
